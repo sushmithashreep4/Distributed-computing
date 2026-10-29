@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Distributed E-Commerce — Load Balancing Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════════════════════ -->
+<header class="header">
+  <div class="header-left">
+    <div class="header-logo">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+    </div>
+    <div>
+      <div class="header-title">Distributed E-Commerce</div>
+      <div class="header-subtitle">Distributed Computing · Load Balancing Demonstration</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="hstatus" id="h-system-status">
+      <span class="pulse-dot green"></span>
+      <span>SYSTEM ONLINE</span>
+    </div>
+    <div class="hstatus">
+      <span class="pulse-dot blue"></span>
+      <span>LOAD BALANCER ACTIVE</span>
+    </div>
+    <div class="hstatus muted">
+      <span>ROUND ROBIN</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     KPI BAR
+═══════════════════════════════════════════════════════════════ -->
+<section class="kpi-bar">
+  <div class="kpi-item">
+    <div class="kpi-label">TOTAL REQUESTS</div>
+    <div class="kpi-value" id="kpi-total">0</div>
+    <div class="kpi-sub" id="kpi-total-sub">Awaiting traffic</div>
+  </div>
+  <div class="kpi-divider"></div>
+  <div class="kpi-item">
+    <div class="kpi-label">ACTIVE NODES</div>
+    <div class="kpi-value" id="kpi-nodes">— / 3</div>
+    <div class="kpi-sub" id="kpi-nodes-sub">Checking…</div>
+  </div>
+  <div class="kpi-divider"></div>
+  <div class="kpi-item">
+    <div class="kpi-label">REQ / NODE</div>
+    <div class="kpi-value" id="kpi-per-node">—</div>
+    <div class="kpi-sub" id="kpi-per-node-sub">Round Robin</div>
+  </div>
+  <div class="kpi-divider"></div>
+  <div class="kpi-item">
+    <div class="kpi-label">ALGORITHM</div>
+    <div class="kpi-value kpi-value-sm">Round Robin</div>
+    <div class="kpi-sub">Load distribution</div>
+  </div>
+  <div class="kpi-divider"></div>
+  <div class="kpi-item">
+    <div class="kpi-label">LOAD BALANCER</div>
+    <div class="kpi-value kpi-value-sm" id="kpi-lb-status">ACTIVE</div>
+    <div class="kpi-sub">Port 5000</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     LIVE ARCHITECTURE — HERO SECTION
+═══════════════════════════════════════════════════════════════ -->
+<section class="section arch-section">
+  <div class="section-header">
+    <div class="section-title">Live Distributed Architecture</div>
+    <div class="section-meta">Real-time request flow visualization</div>
+  </div>
+
+  <div class="arch-visual">
+
+    <!-- CLIENT -->
+    <div class="arch-col">
+      <div class="arch-node-box client-box" id="arch-client">
+        <div class="arch-node-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="arch-node-label">CLIENT</div>
+        <div class="arch-node-sub">Browser</div>
+      </div>
+      <div class="arch-node-tag">HTTP Request</div>
+    </div>
+
+    <!-- ARROW 1 -->
+    <div class="arch-arrow-col">
+      <div class="arch-arrow-line" id="arrow-client-lb">
+        <div class="arch-arrow-track">
+          <div class="arch-packet" id="packet-1"></div>
+        </div>
+        <svg class="arrow-head" viewBox="0 0 10 10"><path d="M2 5 L8 5 M5 2 L8 5 L5 8" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+      </div>
+    </div>
+
+    <!-- LOAD BALANCER -->
+    <div class="arch-col">
+      <div class="arch-node-box lb-box" id="arch-lb">
+        <div class="arch-node-icon lb-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="arch-node-label">LOAD BALANCER</div>
+        <div class="arch-node-sub">:5000 · Round Robin</div>
+        <div class="arch-lb-badge">ACTIVE</div>
+      </div>
+      <div class="arch-node-tag">Distributes traffic</div>
+    </div>
+
+    <!-- ARROW 2 (fan out) -->
+    <div class="arch-arrow-col arch-fan-col">
+      <div class="arch-fan">
+        <div class="arch-fan-line fan-top" id="arrow-lb-n1">
+          <div class="arch-packet" id="packet-2a"></div>
+        </div>
+        <div class="arch-fan-line fan-mid" id="arrow-lb-n2">
+          <div class="arch-packet" id="packet-2b"></div>
+        </div>
+        <div class="arch-fan-line fan-bot" id="arrow-lb-n3">
+          <div class="arch-packet" id="packet-2c"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SERVER NODES (arch diagram) -->
+    <div class="arch-col arch-nodes-col">
+      <div class="arch-node-box server-box" id="arch-node-1" data-node="1">
+        <div class="arch-node-status" id="arch-status-1"><span class="pulse-dot green"></span> ONLINE</div>
+        <div class="arch-node-label">NODE 01</div>
+        <div class="arch-node-sub">:5001</div>
+        <div class="arch-node-reqs" id="arch-reqs-1">0 req</div>
+      </div>
+      <div class="arch-node-box server-box" id="arch-node-2" data-node="2">
+        <div class="arch-node-status" id="arch-status-2"><span class="pulse-dot green"></span> ONLINE</div>
+        <div class="arch-node-label">NODE 02</div>
+        <div class="arch-node-sub">:5002</div>
+        <div class="arch-node-reqs" id="arch-reqs-2">0 req</div>
+      </div>
+      <div class="arch-node-box server-box" id="arch-node-3" data-node="3">
+        <div class="arch-node-status" id="arch-status-3"><span class="pulse-dot green"></span> ONLINE</div>
+        <div class="arch-node-label">NODE 03</div>
+        <div class="arch-node-sub">:5003</div>
+        <div class="arch-node-reqs" id="arch-reqs-3">0 req</div>
+      </div>
+    </div>
+
+    <!-- ARROW 3 (fan in) -->
+    <div class="arch-arrow-col arch-fan-col arch-fan-in-col">
+      <div class="arch-fan arch-fan-in">
+        <div class="arch-fan-line fan-top" id="arrow-n1-db">
+          <div class="arch-packet" id="packet-3a"></div>
+        </div>
+        <div class="arch-fan-line fan-mid" id="arrow-n2-db">
+          <div class="arch-packet" id="packet-3b"></div>
+        </div>
+        <div class="arch-fan-line fan-bot" id="arrow-n3-db">
+          <div class="arch-packet" id="packet-3c"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATABASE -->
+    <div class="arch-col">
+      <div class="arch-node-box db-box" id="arch-db">
+        <div class="arch-node-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        </div>
+        <div class="arch-node-label">DATABASE</div>
+        <div class="arch-node-sub">SQLite</div>
+      </div>
+      <div class="arch-node-tag">Persistent storage</div>
+    </div>
+
+  </div><!-- .arch-visual -->
+
+  <!-- Round Robin Routing Indicator -->
+  <div class="rr-indicator">
+    <div class="rr-label">ROUND ROBIN ROUTING</div>
+    <div class="rr-nodes">
+      <div class="rr-node" id="rr-node-1">NODE 01</div>
+      <div class="rr-arrow">→</div>
+      <div class="rr-node" id="rr-node-2">NODE 02</div>
+      <div class="rr-arrow">→</div>
+      <div class="rr-node" id="rr-node-3">NODE 03</div>
+      <div class="rr-arrow rr-wrap">↩</div>
+    </div>
+    <div class="rr-next" id="rr-next-info">Next request will be distributed via Round Robin</div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SERVER HEALTH + REQUEST DISTRIBUTION
+═══════════════════════════════════════════════════════════════ -->
+<section class="section split-section">
+
+  <!-- Left: Server Health -->
+  <div class="split-left">
+    <div class="section-header">
+      <div class="section-title">Server Health</div>
+      <div class="section-meta" id="health-last-check">Auto-refreshing</div>
+    </div>
+
+    <div class="server-grid">
+
+      <div class="server-card" id="srv-card-1">
+        <div class="srv-header">
+          <div class="srv-indicator" id="srv-ind-1"></div>
+          <div class="srv-name">SERVER NODE 01</div>
+          <div class="srv-status-badge" id="srv-badge-1">ONLINE</div>
+        </div>
+        <div class="srv-port">Port :5001</div>
+        <div class="srv-metrics">
+          <div class="srv-metric">
+            <div class="srv-metric-val" id="srv-reqs-1">0</div>
+            <div class="srv-metric-key">Requests</div>
+          </div>
+          <div class="srv-metric">
+            <div class="srv-metric-val" id="srv-load-1">0%</div>
+            <div class="srv-metric-key">Load Share</div>
+          </div>
+        </div>
+        <div class="srv-last" id="srv-last-1">No requests yet</div>
+        <div class="srv-processing hidden" id="srv-proc-1">⬤ PROCESSING REQUEST</div>
+      </div>
+
+      <div class="server-card" id="srv-card-2">
+        <div class="srv-header">
+          <div class="srv-indicator" id="srv-ind-2"></div>
+          <div class="srv-name">SERVER NODE 02</div>
+          <div class="srv-status-badge" id="srv-badge-2">ONLINE</div>
+        </div>
+        <div class="srv-port">Port :5002</div>
+        <div class="srv-metrics">
+          <div class="srv-metric">
+            <div class="srv-metric-val" id="srv-reqs-2">0</div>
+            <div class="srv-metric-key">Requests</div>
+          </div>
+          <div class="srv-metric">
+            <div class="srv-metric-val" id="srv-load-2">0%</div>
+            <div class="srv-metric-key">Load Share</div>
+          </div>
+        </div>
+        <div class="srv-last" id="srv-last-2">No requests yet</div>
+        <div class="srv-processing hidden" id="srv-proc-2">⬤ PROCESSING REQUEST</div>
+      </div>
+
+      <div class="server-card" id="srv-card-3">
+        <div class="srv-header">
+          <div class="srv-indicator" id="srv-ind-3"></div>
+          <div class="srv-name">SERVER NODE 03</div>
+          <div class="srv-status-badge" id="srv-badge-3">ONLINE</div>
+        </div>
+        <div class="srv-port">Port :5003</div>
+        <div class="srv-metrics">
+          <div class="srv-metric">
+            <div class="srv-metric-val" id="srv-reqs-3">0</div>
+            <div class="srv-metric-key">Requests</div>
+          </div>
+          <div class="srv-metric">
+            <div class="srv-metric-val" id="srv-load-3">0%</div>
+            <div class="srv-metric-key">Load Share</div>
+          </div>
+        </div>
+        <div class="srv-last" id="srv-last-3">No requests yet</div>
+        <div class="srv-processing hidden" id="srv-proc-3">⬤ PROCESSING REQUEST</div>
+      </div>
+
+    </div><!-- .server-grid -->
+  </div>
+
+  <!-- Right: Request Distribution -->
+  <div class="split-right">
+    <div class="section-header">
+      <div class="section-title">Request Distribution</div>
+      <div class="section-meta">Round Robin even spread</div>
+    </div>
+
+    <div class="dist-chart" id="dist-chart">
+      <div class="dist-row">
+        <div class="dist-label">NODE 01</div>
+        <div class="dist-bar-wrap">
+          <div class="dist-bar dist-bar-1" id="dist-bar-1" style="width:0%"></div>
+        </div>
+        <div class="dist-count" id="dist-count-1">0</div>
+      </div>
+      <div class="dist-row">
+        <div class="dist-label">NODE 02</div>
+        <div class="dist-bar-wrap">
+          <div class="dist-bar dist-bar-2" id="dist-bar-2" style="width:0%"></div>
+        </div>
+        <div class="dist-count" id="dist-count-2">0</div>
+      </div>
+      <div class="dist-row">
+        <div class="dist-label">NODE 03</div>
+        <div class="dist-bar-wrap">
+          <div class="dist-bar dist-bar-3" id="dist-bar-3" style="width:0%"></div>
+        </div>
+        <div class="dist-count" id="dist-count-3">0</div>
+      </div>
+    </div>
+
+    <div class="dist-note">
+      Distribution updates automatically every 3 seconds from live backend data.
+    </div>
+
+    <!-- Simulate Traffic Button -->
+    <div class="simulate-area">
+      <button class="btn-simulate" id="btn-simulate" onclick="sendTestRequests()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        SIMULATE TRAFFIC
+      </button>
+      <div class="simulate-progress hidden" id="sim-progress">
+        <div class="sim-bar-wrap">
+          <div class="sim-bar" id="sim-bar" style="width:0%"></div>
+        </div>
+        <div class="sim-label" id="sim-label">0 / 12</div>
+      </div>
+      <div class="simulate-result hidden" id="sim-result"></div>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     LIVE ACTIVITY LOG
+═══════════════════════════════════════════════════════════════ -->
+<section class="section log-section">
+  <div class="section-header">
+    <div class="section-title">Live Request Activity</div>
+    <div class="section-meta-right">
+      <button class="btn-ghost" onclick="clearLog()">Clear</button>
+    </div>
+  </div>
+  <div class="log-terminal" id="log-terminal">
+    <div class="log-empty-state" id="log-empty">Awaiting requests — browse products or simulate traffic to see live data flow.</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     E-COMMERCE CATALOGUE
+═══════════════════════════════════════════════════════════════ -->
+<section class="section products-section">
+  <div class="section-header">
+    <div class="section-title">E-Commerce Catalogue</div>
+    <div class="section-meta-right">
+      <button class="btn-ghost" onclick="loadProducts()">↺ Refresh</button>
+    </div>
+  </div>
+  <div class="section-note">
+    Each product request is routed through the Load Balancer to demonstrate real distributed data retrieval.
+  </div>
+  <div class="products-grid" id="products-grid">
+    <div class="products-loading">Loading catalogue…</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     ORDER MODAL
+═══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="closeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Place Order</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-product" id="modal-product"></div>
+    <div class="modal-field">
+      <label>Customer Name</label>
+      <input type="text" id="customer-name" placeholder="Enter your name" maxlength="100" />
+    </div>
+    <div class="modal-field">
+      <label>Quantity</label>
+      <input type="number" id="order-quantity" value="1" min="1" />
+    </div>
+    <button class="btn-primary" id="btn-place-order" onclick="placeOrder()">Confirm Order</button>
+    <div class="modal-result hidden" id="modal-result"></div>
+  </div>
+</div>
+
+<!-- Product detail modal -->
+<div class="modal-overlay hidden" id="detail-overlay" onclick="closeDetailModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">Product Details</div>
+      <button class="modal-close" onclick="closeDetailModal()">✕</button>
+    </div>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast hidden" id="toast"></div>
+
+<script src="/script.js"></script>
+</body>
+</html>
